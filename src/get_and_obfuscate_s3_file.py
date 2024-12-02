@@ -1,5 +1,6 @@
 import logging
 from src.read_s3_object_into_dataframe import read_s3_object_into_dataframe
+from src.obfuscate_fields import obfuscate_fields
 
 supported_file_types = ['csv', 'json', 'parquet']
 class InvalidInputError(Exception):  
@@ -30,6 +31,7 @@ def get_and_obfuscate_s3_file(s3_details: dict):
     if file_type not in supported_file_types:
         raise UnsupportedFileTypeError("Only csv, json and parquet files supported for obfuscation")
 
+    logging.info(f"Obfuscating fields '{s3_details['pii_fields']}' in file '{s3_file}' in S3 bucket '{bucket_name}'  ")
     
     try:
         s3_data_frame = read_s3_object_into_dataframe(bucket_name, s3_file, file_type)
@@ -37,12 +39,5 @@ def get_and_obfuscate_s3_file(s3_details: dict):
         logger.error(f"Error reading file {s3_file} from bucket {bucket_name} into dataframe: {e}")
         return
     
-    # for column in s3_details["pii_fields"]:
-    #     if column in s3_data_frame.columns:
-    #         logging.info(f"Obfuscated field {column} in file {s3_file}")
-    #         s3_data_frame[column] = '***'
-    #     else:
-    #         logging.info(f"The passed field {column} not available in the file {s3_file}")
-
+    modified_df = obfuscate_fields(s3_data_frame, s3_details['pii_fields'])
     
-    # print(s3_data_frame)
