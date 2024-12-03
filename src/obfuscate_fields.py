@@ -1,10 +1,14 @@
 import pandas as pd
 import logging
 
-def obfuscate_fields(df: pd.DataFrame, fields: list) -> pd.DataFrame:
+def obfuscate_fields(df: pd.DataFrame, fields: list) -> pd.DataFrame | None:
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
+
+    if df.empty:
+        logging.error(f"No records present in the input file")
+        return None
 
     for field in fields:
         if field in df.columns:

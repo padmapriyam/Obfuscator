@@ -11,6 +11,13 @@ def sample_df():
         "country" : ["UK", "India"]
     })
 
+def test_obfuscate_fields_returns_none_when_passed_an_empty_df_and_displays_a_message(caplog):
+    df = obfuscate_fields(pd.DataFrame, ["name"])
+    assert df is None
+    with caplog.at_level(logging.ERROR):
+        obfuscate_fields(pd.DataFrame, ["name", "email"])
+    assert "No records present in the input file" in caplog.text
+
 def test_obfuscate_fields_returns_a_dataframe(sample_df):
     df = obfuscate_fields(sample_df, ["name"])
     assert isinstance(df, pd.DataFrame)

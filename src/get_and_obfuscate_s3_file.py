@@ -1,6 +1,8 @@
 import logging
+import io
 from src.read_s3_object_into_dataframe import read_s3_object_into_dataframe
 from src.obfuscate_fields import obfuscate_fields
+from src.create_s3_object_from_dataframe import create_s3_object_from_dataframe
 
 supported_file_types = ['csv', 'json', 'parquet']
 class InvalidInputError(Exception):  
@@ -15,7 +17,7 @@ class UnsupportedFileTypeError(Exception):
     """  
     pass 
 
-def get_and_obfuscate_s3_file(s3_details: dict):
+def get_and_obfuscate_s3_file(s3_details: dict) -> str | bytes | None:
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -36,8 +38,18 @@ def get_and_obfuscate_s3_file(s3_details: dict):
     try:
         s3_data_frame = read_s3_object_into_dataframe(bucket_name, s3_file, file_type)
     except Exception as e:
-        logger.error(f"Error reading file {s3_file} from bucket {bucket_name} into dataframe: {e}")
+        logger.error(f"Error reading file {s3_file} from bucket {bucket_name} {e}")
         return
     
     modified_df = obfuscate_fields(s3_data_frame, s3_details['pii_fields'])
+
+    if modified_df is None:
+        return None
     
+    print(modified_df)
+
+    try:
+        obfuscated_s3_object = create_s3_object_from_dataframe(modified_df, file_type)
+        return obfuscated_s3_object
+    except Exception as e:
+        logger.error(f"Error converting file {s3_file} from bucket {bucket_name} {e}")
