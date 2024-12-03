@@ -2,8 +2,8 @@ import boto3
 import pandas as pd
 import io
 
-def read_s3_object_into_dataframe(bucket_name, key, type_of_file):
-    """This function is used to read csv file in s3 bucket and convert into a dataframe, ready for obfuscating the fields.
+def read_s3_object_into_dataframe(bucket_name: str, key: str, type_of_file: str) -> pd.DataFrame:
+    """This function is used to read file in s3 bucket and convert into a dataframe, ready for obfuscating the fields.
 
     Args:
         bucket_name: the name of the bucket to access tables containing json lines data from, in this case, the imgestion s3 bucket.
