@@ -1,7 +1,10 @@
 import pandas as pd
 import io
 
-def create_s3_object_from_dataframe(df: pd.DataFrame, file_type: str) -> str | bytes | None:
+
+def create_s3_object_from_dataframe(
+    df: pd.DataFrame, file_type: str
+) -> str | bytes | None:
 
     if df.empty:
         return None

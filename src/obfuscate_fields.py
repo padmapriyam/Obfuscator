@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 
+
 def obfuscate_fields(df: pd.DataFrame, fields: list) -> pd.DataFrame | None:
 
     logger = logging.getLogger()

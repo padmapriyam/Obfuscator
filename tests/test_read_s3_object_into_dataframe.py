@@ -1,9 +1,10 @@
 import pytest
-import pandas as pd 
+import pandas as pd
 import boto3
 from moto import mock_aws
 import os
 from src.read_s3_object_into_dataframe import read_s3_object_into_dataframe
+
 
 @pytest.fixture(scope="function")
 def aws_creds():
@@ -29,14 +30,13 @@ def s3_bucket(s3_client):
     )
     return bucket_name
 
+
 @pytest.fixture
 def add_bucket_object(s3_client, s3_bucket):
-    
-    df = pd.DataFrame({
-        "id" : ["1", "2"],
-        "name" : ["person1", "person2"],
-        "country" : ["UK", "India"]
-    })
+
+    df = pd.DataFrame(
+        {"id": ["1", "2"], "name": ["person1", "person2"], "country": ["UK", "India"]}
+    )
 
     df_csv = df.to_csv()
 
@@ -44,14 +44,20 @@ def add_bucket_object(s3_client, s3_bucket):
     s3_client.put_object(Bucket=s3_bucket, Key=key, Body=df_csv)
     return key
 
-def test_read_s3_object_into_dataframe_returns_a_dataframe(add_bucket_object, s3_bucket):
+
+def test_read_s3_object_into_dataframe_returns_a_dataframe(
+    add_bucket_object, s3_bucket
+):
 
     key = add_bucket_object
     df = read_s3_object_into_dataframe(s3_bucket, key, "csv")
 
     assert isinstance(df, pd.DataFrame)
 
-def test_read_s3_object_into_dataframe_returns_correct_columns(add_bucket_object, s3_bucket):
+
+def test_read_s3_object_into_dataframe_returns_correct_columns(
+    add_bucket_object, s3_bucket
+):
 
     key = add_bucket_object
     df = read_s3_object_into_dataframe(s3_bucket, key, "csv")
@@ -59,22 +65,28 @@ def test_read_s3_object_into_dataframe_returns_correct_columns(add_bucket_object
     assert list(df.columns) == ["id", "name", "country"]
     assert len(df) == 2
 
+
 def test_read_s3_object_into_dataframe_returns_error_when_key_not_found(s3_bucket):
 
     with pytest.raises(ValueError):
         read_s3_object_into_dataframe(s3_bucket, "hello", "csv")
+
 
 def test_read_s3_object_into_dataframe_returns_error_when_no_bucket():
 
     with pytest.raises(ValueError):
         read_s3_object_into_dataframe("1", "2", "csv")
 
+
 def test_read_s3_object_into_dataframe_returns_message_when_not_str():
 
     with pytest.raises(TypeError):
         read_s3_object_into_dataframe(1, 2)
 
-def test_read_s3_object_into_dataframe_returns_message_for_unsupported_file_type(add_bucket_object, s3_bucket):
+
+def test_read_s3_object_into_dataframe_returns_message_for_unsupported_file_type(
+    add_bucket_object, s3_bucket
+):
 
     key = add_bucket_object
     with pytest.raises(TypeError):
