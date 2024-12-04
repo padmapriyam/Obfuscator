@@ -5,7 +5,23 @@ import io
 def create_s3_object_from_dataframe(
     df: pd.DataFrame, file_type: str
 ) -> str | bytes | None:
+    """Creates a new object compatible with boto3 putObject of S3.
 
+    This function uses the relevant functions in the pandas library
+    to convert the passed dataframe into format suitable for uploading
+    to S3 bucket
+
+    Args:
+        df: Dataframe of the object obtained from S3 and fields obfuscated
+        file_type: the type of input file (csv, json or parquet)
+
+    Returns:
+        A string or bytes buffer depending on the file_type if successful
+        None if df is empty
+
+    Raises:
+        TypeError when file_type not supported
+    """
     if df.empty:
         return None
 

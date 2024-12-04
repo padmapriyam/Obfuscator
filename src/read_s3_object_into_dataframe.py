@@ -11,13 +11,14 @@ def read_s3_object_into_dataframe(
     Args:
         bucket_name: the name of the bucket to access tables containing json lines data from, in this case, the imgestion s3 bucket.
         key: the filepath within the bucket to the json lines file to be read into a dataframe.
-        type_of_file: the type of the input file retrieved from the key passed
+        file_type: the type of the input file retrieved from the key passed
 
     Returns:
         A dataframe of the records in the input file.
 
     Raises:
         TyperError is the bucket_name or key arguments passed are not strings, type of file not supported.
+        ValueError if there any problem accessing the file from S3 bucket
     """
     supported_file_types = ["csv", "json", "parquet"]
 

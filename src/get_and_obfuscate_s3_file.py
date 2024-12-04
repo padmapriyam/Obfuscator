@@ -24,6 +24,21 @@ class UnsupportedFileTypeError(Exception):
 
 
 def get_and_obfuscate_s3_file(s3_details: dict) -> str | bytes | None:
+    """This function is used to get a S3 file path and the fields in the S3 file which needs to be obfuscated.
+
+    Args:
+        s3_details: dictionary containing the filepath of the S3 object and the fields to be obfuscated
+        (eg: s3_details = {  "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv",
+                "pii_fields": ["name", "email_address"] } )
+
+    Returns:
+        A string or bytes buffer which is compatible and can be used with boto3 S3 putObject
+
+    Raises:
+        InvalidInputError if s3_details has empty data
+        UnsupportedFileTypeError if the file is not csv, json or parquet
+        TyperError if the bucket_name or key arguments passed are not strings or  not present in AWS, type of file not supported.
+    """
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
