@@ -32,7 +32,7 @@ def s3_bucket(s3_client):
 
 
 @pytest.fixture
-def add_bucket_object(s3_client, s3_bucket):
+def add_bucket_object_csv(s3_client, s3_bucket):
 
     df = pd.DataFrame(
         {"id": ["1", "2"], "name": ["person1", "person2"], "country": ["UK", "India"]}
@@ -45,22 +45,72 @@ def add_bucket_object(s3_client, s3_bucket):
     return key
 
 
+@pytest.fixture
+def add_bucket_object_json(s3_client, s3_bucket):
+
+    df = pd.DataFrame(
+        {"id": ["1", "2"], "name": ["person1", "person2"], "country": ["UK", "India"]}
+    )
+
+    df_json = df.to_json()
+
+    key = "people.json"
+    s3_client.put_object(Bucket=s3_bucket, Key=key, Body=df_json)
+    return key
+
+
+@pytest.fixture
+def add_bucket_object_parquet(s3_client, s3_bucket):
+
+    df = pd.DataFrame(
+        {"id": ["1", "2"], "name": ["person1", "person2"], "country": ["UK", "India"]}
+    )
+
+    df_parquet = df.to_parquet()
+
+    key = "people.parquet"
+    s3_client.put_object(Bucket=s3_bucket, Key=key, Body=df_parquet)
+    return key
+
+
 def test_read_s3_object_into_dataframe_returns_a_dataframe(
-    add_bucket_object, s3_bucket
+    add_bucket_object_csv, s3_bucket
 ):
 
-    key = add_bucket_object
+    key = add_bucket_object_csv
     df = read_s3_object_into_dataframe(s3_bucket, key, "csv")
 
     assert isinstance(df, pd.DataFrame)
 
 
-def test_read_s3_object_into_dataframe_returns_correct_columns(
-    add_bucket_object, s3_bucket
+def test_read_s3_object_into_dataframe_returns_correct_columns_for_csv(
+    add_bucket_object_csv, s3_bucket
 ):
 
-    key = add_bucket_object
+    key = add_bucket_object_csv
     df = read_s3_object_into_dataframe(s3_bucket, key, "csv")
+
+    assert list(df.columns) == ["id", "name", "country"]
+    assert len(df) == 2
+
+
+def test_read_s3_object_into_dataframe_returns_correct_columns_for_json(
+    add_bucket_object_json, s3_bucket
+):
+
+    key = add_bucket_object_json
+    df = read_s3_object_into_dataframe(s3_bucket, key, "json")
+
+    assert list(df.columns) == ["id", "name", "country"]
+    assert len(df) == 2
+
+
+def test_read_s3_object_into_dataframe_returns_correct_columns_for_parquet(
+    add_bucket_object_parquet, s3_bucket
+):
+
+    key = add_bucket_object_parquet
+    df = read_s3_object_into_dataframe(s3_bucket, key, "parquet")
 
     assert list(df.columns) == ["id", "name", "country"]
     assert len(df) == 2
@@ -85,9 +135,18 @@ def test_read_s3_object_into_dataframe_returns_message_when_not_str():
 
 
 def test_read_s3_object_into_dataframe_returns_message_for_unsupported_file_type(
-    add_bucket_object, s3_bucket
+    add_bucket_object_csv, s3_bucket
 ):
 
-    key = add_bucket_object
+    key = add_bucket_object_csv
     with pytest.raises(TypeError):
         read_s3_object_into_dataframe(s3_bucket, key, "txt")
+
+
+def test_read_s3_object_into_dataframe_returns_message_for_unsupported_inputs():
+
+    with pytest.raises(TypeError):
+        read_s3_object_into_dataframe(s3_bucket, 2, "csv")
+
+    with pytest.raises(TypeError):
+        read_s3_object_into_dataframe(1, 2, "csv")

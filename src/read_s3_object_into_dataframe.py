@@ -9,8 +9,8 @@ def read_s3_object_into_dataframe(
     """This function is used to read file in s3 bucket and convert into a dataframe, ready for obfuscating the fields.
 
     Args:
-        bucket_name: the name of the bucket to access tables containing json lines data from, in this case, the imgestion s3 bucket.
-        key: the filepath within the bucket to the json lines file to be read into a dataframe.
+        bucket_name: the name of the bucket to access the file to be obfuscated.
+        key: the filepath within the bucket.
         file_type: the type of the input file retrieved from the key passed
 
     Returns:
