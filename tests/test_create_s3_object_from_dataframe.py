@@ -32,7 +32,7 @@ def test_create_s3_object_from_dataframe_returns_string_for_json_file(sample_df)
     assert isinstance(response, str)
 
 
-def test_create_s3_object_from_dataframe_returns_string_for_json_file(sample_df):
+def test_create_s3_object_from_dataframe_returns_string_for_parquet_file(sample_df):
     response = create_s3_object_from_dataframe(sample_df, "parquet")
     assert isinstance(response, bytes)
 
