@@ -1,10 +1,19 @@
 import logging
 import io
+import json
 from src.read_s3_object_into_dataframe import read_s3_object_into_dataframe
 from src.obfuscate_fields import obfuscate_fields
 from src.create_s3_object_from_dataframe import create_s3_object_from_dataframe
 
 supported_file_types = ["csv", "json", "parquet"]
+
+
+class InvalidKeyError(Exception):
+    """
+    Raised when the input file/fields are not passed
+    """
+
+    pass
 
 
 class InvalidInputError(Exception):
@@ -23,13 +32,13 @@ class UnsupportedFileTypeError(Exception):
     pass
 
 
-def get_and_obfuscate_s3_file(s3_details: dict) -> str | bytes | None:
+def get_and_obfuscate_s3_file(s3_string: str) -> str | bytes | None:
     """This function is used to get a S3 file path and the fields in the S3 file which needs to be obfuscated.
 
     Args:
-        s3_details: dictionary containing the filepath of the S3 object and the fields to be obfuscated
-        (eg: s3_details = {  "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv",
-                "pii_fields": ["name", "email_address"] } )
+        s3_string: json string containing the filepath of the S3 object and the fields to be obfuscated
+        (eg: s3_string = '{  "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv",
+                "pii_fields": ["name", "email_address"] }' )
 
     Returns:
         A string or bytes buffer which is compatible and can be used with boto3 S3 putObject
@@ -43,8 +52,12 @@ def get_and_obfuscate_s3_file(s3_details: dict) -> str | bytes | None:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    if not s3_details["pii_fields"] or s3_details["file_to_obfuscate"] is None:
-        raise InvalidInputError("No file/fields provided to obfuscate")
+    s3_details = json.loads(s3_string)
+
+    if "file_to_obfuscate" not in s3_details or not s3_details["file_to_obfuscate"]:
+        raise InvalidInputError("No file provided to obfuscate")
+    if "pii_fields" not in s3_details or not s3_details["pii_fields"]:
+        raise InvalidInputError("No fields provided to obfuscate")
 
     bucket_name = s3_details["file_to_obfuscate"].split("/")[-2]
     s3_file = s3_details["file_to_obfuscate"].split("/")[-1]

@@ -4,6 +4,7 @@ import pandas as pd
 from unittest.mock import patch
 from src.get_and_obfuscate_s3_file import (
     get_and_obfuscate_s3_file,
+    InvalidKeyError,
     InvalidInputError,
     UnsupportedFileTypeError,
 )
@@ -11,49 +12,35 @@ from src.get_and_obfuscate_s3_file import (
 
 @pytest.fixture
 def s3_details():
-    s3_details = {
-        "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.json",
-        "pii_fields": ["name", "email"],
-    }
-    return s3_details
+    s3_string = '{ "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.json", "pii_fields": ["name", "email"] }'
+    return s3_string
 
 
 def test_get_and_obfuscate_s3_file_returns_exception_when_file_not_passed():
-    s3_details = {"file_to_obfuscate": None, "pii_fields": ["name", "email"]}
+    s3_string = '{"file_to_obfuscate": "", "pii_fields": ["name", "email"]}'
     with pytest.raises(InvalidInputError) as excinfo:
-        get_and_obfuscate_s3_file(s3_details)
-    assert str(excinfo.value) == "No file/fields provided to obfuscate"
+        get_and_obfuscate_s3_file(s3_string)
+    assert str(excinfo.value) == "No file provided to obfuscate"
 
 
-def test_get_and_obfuscate_s3_file_returns_exception_with_no_fields():
-    s3_details = {
-        "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv",
-        "pii_fields": None,
-    }
+def test_get_and_obfuscate_s3_file_returns_exception_with_key_not_present():
+    s3_string = '{ "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv" }'
     with pytest.raises(InvalidInputError) as excinfo:
-        get_and_obfuscate_s3_file(s3_details)
-    assert str(excinfo.value) == "No file/fields provided to obfuscate"
+        get_and_obfuscate_s3_file(s3_string)
+    assert str(excinfo.value) == "No fields provided to obfuscate"
 
 
 def test_get_and_obfuscate_s3_file_returns_exception_with_empty_list_for_fields():
-    s3_details = {
-        "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv",
-        "pii_fields": [],
-    }
+    s3_string = '{ "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.csv", "pii_fields": [] }'
     with pytest.raises(InvalidInputError) as excinfo:
-        get_and_obfuscate_s3_file(s3_details)
-    assert str(excinfo.value) == "No file/fields provided to obfuscate"
+        get_and_obfuscate_s3_file(s3_string)
+    assert str(excinfo.value) == "No fields provided to obfuscate"
 
 
-def test_get_and_obfuscate_s3_file_returns_exception_when_file_format_not_supported(
-    s3_details,
-):
-    s3_details = {
-        "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.jpeg",
-        "pii_fields": ["name", "email"],
-    }
+def test_get_and_obfuscate_s3_file_returns_exception_when_file_format_not_supported():
+    s3_string = '{ "file_to_obfuscate": "s3://my_ingestion_bucket/new_data/file1.jpeg", "pii_fields": ["name", "email"] }'
     with pytest.raises(UnsupportedFileTypeError) as excinfo:
-        get_and_obfuscate_s3_file(s3_details)
+        get_and_obfuscate_s3_file(s3_string)
     assert (
         str(excinfo.value)
         == "Only csv, json and parquet files supported for obfuscation"
