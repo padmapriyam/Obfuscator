@@ -44,10 +44,10 @@ The output file format will be the same format as the input file with the passed
 # Setup
 
 1. Clone this repository to your local machine:
-   https://github.com/padmapriyam/GDPR-Obfuscator.git
+   https://github.com/padmapriyam/Obfuscator.git
 2. Install Python, install dependencies and run unittests via Make commands (Make all)
 3. Configure AWS's iam credentials using the AWS CLI: aws configure.
 
-python run.py --s3FilePath s3://pm-gdpr-obfuscator/people-100.csv --obfuscateFields "First Name" "Sex"
-python run.py --s3FilePath s3://pm-gdpr-obfuscator/generated.json --obfuscateFields "balance"
-python run.py --s3FilePath s3://pm-gdpr-obfuscator/people.parquet --obfuscateFields "First Name" "Sex"
+python src/run.py --s3FilePath s3://pm-gdpr-obfuscator/people-100.csv --obfuscateFields "First Name" "Sex"
+python src/run.py --s3FilePath s3://pm-gdpr-obfuscator/generated.json --obfuscateFields "balance"
+python src/run.py --s3FilePath s3://pm-gdpr-obfuscator/people.parquet --obfuscateFields "First Name" "Sex"
