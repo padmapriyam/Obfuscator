@@ -8,14 +8,6 @@ from src.create_s3_object_from_dataframe import create_s3_object_from_dataframe
 supported_file_types = ["csv", "json", "parquet"]
 
 
-class InvalidKeyError(Exception):
-    """
-    Raised when the input file/fields are not passed
-    """
-
-    pass
-
-
 class InvalidInputError(Exception):
     """
     Raised when the input file/fields are not valid

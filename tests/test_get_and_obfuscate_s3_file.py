@@ -4,7 +4,6 @@ import pandas as pd
 from unittest.mock import patch
 from src.get_and_obfuscate_s3_file import (
     get_and_obfuscate_s3_file,
-    InvalidKeyError,
     InvalidInputError,
     UnsupportedFileTypeError,
 )
