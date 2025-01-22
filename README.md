@@ -15,7 +15,9 @@ obfuscate personally identifiable information (PII).
    https://github.com/padmapriyam/Obfuscator.git
 2. Install Python v3.11 and [make](https://www.gnu.org/software/make/)
 3. Install dependencies and unittests using the command `make all`
-4. To check for vulnerabilities and malicious packages in the dependencies run the command `make run-checks-with-security-tests`. All the dependencies have been checked and updated as of 22 Jan 2025. Please find the screen shot below <img width="1497" alt="Screenshot 2025-01-22 at 21 10 09" src="https://github.com/user-attachments/assets/a319b180-e4ba-46af-ad35-855fec033e7c" />
+4. To check for vulnerabilities and malicious packages in the dependencies run the command `make run-checks-with-security-tests`. All the dependencies have been checked and updated as of 22 Jan 2025. Please find the screen shot below
+
+<img width="1497" alt="Screenshot 2025-01-22 at 21 10 09" src="https://github.com/user-attachments/assets/a319b180-e4ba-46af-ad35-855fec033e7c" />
 
 6. Configure AWS's iam credentials using the AWS CLI: `aws configure`
 
