@@ -15,8 +15,9 @@ obfuscate personally identifiable information (PII).
    https://github.com/padmapriyam/Obfuscator.git
 2. Install Python v3.11 and [make](https://www.gnu.org/software/make/)
 3. Install dependencies and unittests using the command `make all`
-4. To check for vulnarabilities and malicious packages in the dependencies run the command `make run-checks-with-security-tests`. All the dependencies has been checked and updated as of 22 Jan 2025. 
-5. Configure AWS's iam credentials using the AWS CLI: `aws configure`
+4. To check for vulnerabilities and malicious packages in the dependencies run the command `make run-checks-with-security-tests`. All the dependencies have been checked and updated as of 22 Jan 2025. Please find the screen shot below <img width="1497" alt="Screenshot 2025-01-22 at 21 10 09" src="https://github.com/user-attachments/assets/a319b180-e4ba-46af-ad35-855fec033e7c" />
+
+6. Configure AWS's iam credentials using the AWS CLI: `aws configure`
 
 ## How to use
 `get_and_obfuscate_s3_file` is the main function which needs to be invoked with the one parameter `s3_details`
