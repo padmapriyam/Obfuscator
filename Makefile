@@ -73,6 +73,6 @@ check-coverage:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov=src tests/)
 
 ## Run all checks
-run-checks: security-test unit-test check-coverage
+run-checks-with-security-tests: security-test unit-test check-coverage
 
-all: requirements dev-setup run-checks
+all: requirements dev-setup unit-test check-coverage
